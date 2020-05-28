@@ -193,4 +193,27 @@ class ExtensionsTest {
 
         actual.toHexColourString()
     }
+
+    @Test
+    fun shouldCapitalizeFirstLetterInTheString() {
+        val expected = "Happy"
+
+        // given
+        val testWord = "happy"
+
+        // when
+        val actual = testWord.capitalize()
+
+        // then
+        assertEquals(expected, actual)
+    }
+
+    @Test (expected = IllegalArgumentException::class)
+    fun shouldThrowException_WhenCapitalizeIsCalledWithEmptyString() {
+        // given
+        val testWord = ""
+
+        // when
+        testWord.capitalize()
+    }
 }

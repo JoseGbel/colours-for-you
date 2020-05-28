@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Colours for You</string>
+    <string name="colour_sample">%1$s sample</string>
 </resources>

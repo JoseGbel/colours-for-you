@@ -1,16 +1,84 @@
 package com.remcode.coloursforyou.presentation
 
+import android.animation.ValueAnimator
+import android.content.res.ColorStateList
+import android.graphics.Color
+import android.media.MediaPlayer
 import android.os.Bundle
-import com.remcode.coloursforyou.BaseActivity
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.remcode.coloursforyou.R
-import kotlinx.android.synthetic.main.layout_toolbar.*
+import com.remcode.coloursforyou.business.ColoursViewModel
+import com.remcode.coloursforyou.utils.capitalize
+import kotlinx.android.synthetic.main.activity_colours.*
 
-class ColoursActivity : BaseActivity() {
+
+class ColoursActivity : AppCompatActivity() {
+
+    private lateinit var viewModel : ColoursViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_colours)
 
+        viewModel = ViewModelProvider(this).get(ColoursViewModel::class.java)
 
+        fab.setOnClickListener {
+            val randomColour = viewModel.getRandomHexColour()
+
+            viewModel.getRandomWord()
+            observeWordChanges()
+
+            observeLoadingStatus()
+
+            val splatFx = viewModel.playSplatFx
+            splatFx.observe(this, Observer { playSound ->
+                if (playSound) {
+//                    val mp = MediaPlayer.create(this,)
+////                    mp.start()
+                }
+            })
+
+            performAnimation()
+            paint_and_brush_layout.visibility = View.VISIBLE
+            // change the view colours
+            splat.setColorFilter(Color.parseColor(randomColour))
+            splat.setColorFilter(Color.parseColor(randomColour))
+            paint.backgroundTintList = ColorStateList.valueOf(Color.parseColor(randomColour))
+            fab.backgroundTintList = ColorStateList.valueOf(Color.parseColor(randomColour))
+        }
+    }
+
+    private fun observeWordChanges() {
+        val randomWord = viewModel.word
+        randomWord.observe(this, Observer { words ->
+            colour_name.text = getString(R.string.colour_sample, words[0].capitalize())
+        })
+    }
+
+    private fun observeLoadingStatus() {
+        val loading = viewModel.loading
+        loading.observe(this, Observer { loading ->
+            if (loading) {
+                splat.visibility = View.INVISIBLE
+                colour_name.visibility = View.INVISIBLE
+            } else {
+                splat.visibility = View.VISIBLE
+                colour_name.visibility = View.VISIBLE
+            }
+        })
+    }
+
+    private fun performAnimation() {
+        val animator = ValueAnimator.ofFloat(-0.54f, 0.8f)
+        animator.duration = 2000L
+        animator.addUpdateListener { valueAnimator ->
+            val progress = valueAnimator.animatedValue as Float
+            paint.translationX = -paint.width * (1.0f - progress)
+            brush.translationX = paint.width * progress
+        }
+        animator.start()
     }
 }

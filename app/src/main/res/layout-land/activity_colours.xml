@@ -38,26 +38,25 @@
         android:id="@+id/colour_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Color name!"
         android:layout_marginTop="@dimen/colour_name_margin_top"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/splat"
         app:layout_constraintVertical_bias="0.103"
-        android:textSize="@dimen/color_name_text"
+        android:textSize="24sp"
         android:visibility="invisible"/>
 
     <ImageView
         android:id="@+id/splat"
-        android:layout_width="230dp"
-        android:layout_height="230dp"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
         android:src="@drawable/simple_splat_opt"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.493"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.503"
+        app:layout_constraintVertical_bias="0.703"
         android:visibility="invisible"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

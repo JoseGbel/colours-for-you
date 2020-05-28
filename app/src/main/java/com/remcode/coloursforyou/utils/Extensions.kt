@@ -1,6 +1,7 @@
 package com.remcode.coloursforyou.utils
 
 import java.lang.IllegalArgumentException
+import java.lang.StringBuilder
 
 /**
  * Extension function that converts an integer to a Hexadecimal string to represent an RGB colour
@@ -25,4 +26,18 @@ fun Int.toHexColourString() : String {
     }
 
     return result.toUpperCase()
+}
+
+fun String.capitalize() : String {
+    val sb = StringBuilder()
+
+    if (this == "") throw IllegalArgumentException()
+
+    for (i in this.indices){
+        if(i == 0)
+            sb.append(this[i].toUpperCase())
+        else
+            sb.append(this[i])
+    }
+    return sb.toString()
 }

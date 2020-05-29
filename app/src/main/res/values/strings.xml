@@ -4,4 +4,12 @@
     <string name="splat_image">Splat image</string>
     <string name="delete_button">Delete button</string>
     <string name="delete_colours">Delete Colours</string>
+    <string name="possible_causes">
+        Possible causes:
+        \n\t - You are not connected to the Internet.
+        \n\t - The server is not responding.
+    </string>
+    <string name="ok">OK</string>
+    <string name="unable_to_connect">Unable to connect</string>
+
 </resources>

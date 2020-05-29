@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.remcode.coloursforyou">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
@@ -12,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".presentation.ColoursActivity">
+        <activity android:name=".presentation.ColourGeneratorActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

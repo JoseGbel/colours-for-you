@@ -1,17 +1,19 @@
 package com.remcode.coloursforyou.business
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.*
 import com.remcode.coloursforyou.data.local.ColourDatabase
 import com.remcode.coloursforyou.data.models.Colour
 import com.remcode.coloursforyou.data.repository.MainRepositoryImpl
 import com.remcode.coloursforyou.utils.toHexColourString
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import java.lang.Exception
 import kotlin.random.Random
 
-class ColoursViewModel(application: Application) : AndroidViewModel(application) {
+class ColourGeneratorViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val TAG = "AppDebug"
 
     private val _playSplatFx = MutableLiveData(false)
     val playSplatFx: LiveData<Boolean>
@@ -41,14 +43,23 @@ class ColoursViewModel(application: Application) : AndroidViewModel(application)
     fun getRandomWord() {
         _loading.postValue(true)
         _playSplatFx.value = false
-        val job = viewModelScope.launch(Dispatchers.IO) {
-            delay(2000)
-            _word.postValue(repository.getRandomWord())
-        }
+        try {
+            val handler = CoroutineExceptionHandler { _, exception ->
+                Log.e(TAG, "CoroutineExceptionHandler got $exception")
+            }
+            val job = viewModelScope.launch(Dispatchers.IO + handler) {
+                delay(2000)
+                _word.postValue(repository.getRandomWord())
+            }
 
-        job.invokeOnCompletion {
-            _loading.postValue(false)
-            _playSplatFx.value = true
+            job.invokeOnCompletion {
+                _loading.postValue(false)
+                _playSplatFx.postValue(true)
+            }
+        }catch (exception: Exception){
+            // network call's unhappy path ...
+            if (exception.message != null)
+                Log.e(TAG, exception.message!!)
         }
     }
 

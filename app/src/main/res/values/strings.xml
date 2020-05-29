@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Colours for You</string>
     <string name="colour_sample">%1$s sample</string>
+    <string name="splat_image">Splat image</string>
+    <string name="delete_button">Delete button</string>
+    <string name="delete_colours">Delete Colours</string>
 </resources>

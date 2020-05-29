@@ -13,14 +13,12 @@ class ColoursActivityTest {
 
     @Test
     fun visibilityTest() {
-        onView(withId(R.id.colour_view)).check(matches(isDisplayed()))
+        onView(withId(R.id.splat)).check(matches(isDisplayed()))
         onView(withId(R.id.fab)).check(matches(isDisplayed()))
     }
 
     @Test
     fun clickOnFabGetsANewColour() {
-
         onView(withId(R.id.fab)).perform(click())
-
     }
 }

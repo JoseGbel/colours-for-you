@@ -3,7 +3,7 @@ package com.remcode.coloursforyou.presentation
 import android.animation.ValueAnimator
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.media.MediaPlayer
+import android.media.SoundPool
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -25,6 +25,8 @@ class ColoursActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this).get(ColoursViewModel::class.java)
 
+        val (soundPool, splatSoundId) = buildSoundPool()
+
         fab.setOnClickListener {
             val randomColour = viewModel.getRandomHexColour()
 
@@ -36,8 +38,7 @@ class ColoursActivity : AppCompatActivity() {
             val splatFx = viewModel.playSplatFx
             splatFx.observe(this, Observer { playSound ->
                 if (playSound) {
-//                    val mp = MediaPlayer.create(this,)
-////                    mp.start()
+                    soundPool.play(splatSoundId, 1f, 1f, 1, 0,1f)
                 }
             })
 
@@ -45,10 +46,20 @@ class ColoursActivity : AppCompatActivity() {
             paint_and_brush_layout.visibility = View.VISIBLE
             // change the view colours
             splat.setColorFilter(Color.parseColor(randomColour))
-            splat.setColorFilter(Color.parseColor(randomColour))
             paint.backgroundTintList = ColorStateList.valueOf(Color.parseColor(randomColour))
             fab.backgroundTintList = ColorStateList.valueOf(Color.parseColor(randomColour))
         }
+    }
+
+    private fun buildSoundPool(): Pair<SoundPool, Int> {
+        // build a sound pool
+        val soundPool = SoundPool.Builder()
+            .setMaxStreams(1)
+            .build()
+
+        // load a sound
+        val splatSoundId = soundPool.load(this, R.raw.splat_fx, 1)
+        return Pair(soundPool, splatSoundId)
     }
 
     private fun observeWordChanges() {

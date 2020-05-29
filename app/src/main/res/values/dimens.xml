@@ -7,4 +7,6 @@
     <dimen name="fab_diameter">64dp</dimen>
     <dimen name="color_name_text">30sp</dimen>
     <dimen name="colour_name_margin_top">16dp</dimen>
+    <dimen name="recyclerview_iv_size">50dp</dimen>
+    <dimen name="big_padding">8dp</dimen>
 </resources>

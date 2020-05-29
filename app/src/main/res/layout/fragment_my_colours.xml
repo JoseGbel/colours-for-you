@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.ColourListActivity">
+    tools:context=".presentation.MainActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerview"
@@ -23,7 +23,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
+        android:background="@drawable/btn_shape"
+        android:textColor="#fff"
+        android:layout_margin="@dimen/fab_margin"
+        android:paddingStart="15dp"
+        android:paddingEnd="15dp"
         android:text="@string/delete_colours"
         android:contentDescription="@string/delete_button"/>
 

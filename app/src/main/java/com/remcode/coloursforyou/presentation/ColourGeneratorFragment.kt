@@ -13,19 +13,20 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.remcode.coloursforyou.R
 import com.remcode.coloursforyou.business.ColourGeneratorViewModel
-import com.remcode.coloursforyou.business.ViewModelFactory
-import com.remcode.coloursforyou.data.models.Colour
+import com.remcode.coloursforyou.business.ColourGeneratorViewModelFactory
 import com.remcode.coloursforyou.utils.NetworkStatus
 import com.remcode.coloursforyou.utils.NetworkStatusLiveData
 import com.remcode.coloursforyou.utils.capitalize
-import kotlinx.android.synthetic.main.activity_colour_generator.*
+import kotlinx.android.synthetic.main.fragment_colour_generator.*
 
 class ColourGeneratorFragment : Fragment() {
 
+    private var isFisrtSplat: Boolean = true
     private var connected: Boolean = false
-    private lateinit var viewModel : ColourGeneratorViewModel
+    private lateinit var viewModel: ColourGeneratorViewModel
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_colour_generator, container, false)
@@ -34,10 +35,9 @@ class ColourGeneratorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(this, ViewModelFactory(requireActivity().application))
-            .get(ColourGeneratorViewModel::class.java)
-
-
+        viewModel =
+            ViewModelProvider(this, ColourGeneratorViewModelFactory(requireActivity().application))
+                .get(ColourGeneratorViewModel::class.java)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -56,25 +56,23 @@ class ColourGeneratorFragment : Fragment() {
         fab.setOnClickListener {
             val randomColour = viewModel.getRandomHexColour()
 
-            if(connected) {
-                viewModel.getRandomWord()
-
-                if(randomColour != null && viewModel.word.value != null)
-                    viewModel.insert(Colour(randomColour, viewModel.word.value!![0]))
-                else {
-                    // do something
-                }
+            if (connected) {
+                viewModel.getRandomWord(randomColour)
 
                 performAnimation()
-                paint_and_brush_layout.visibility = View.VISIBLE
-                // change the view colours
-                splat.setColorFilter(Color.parseColor(randomColour))
-                paint.backgroundTintList = ColorStateList.valueOf(Color.parseColor(randomColour))
-                fab.backgroundTintList = ColorStateList.valueOf(Color.parseColor(randomColour))
-            }else {
+
+                changeViewColours(randomColour)
+            } else {
                 displayUnableToConnectDialog()
             }
         }
+    }
+
+    private fun changeViewColours(randomColour: String?) {
+        // change the view colours
+        splat.setColorFilter(Color.parseColor(randomColour))
+        paint.backgroundTintList = ColorStateList.valueOf(Color.parseColor(randomColour))
+        fab.backgroundTintList = ColorStateList.valueOf(Color.parseColor(randomColour))
     }
 
     private fun observeSplatFxCue(soundPool: SoundPool, splatSoundId: Int) {
@@ -106,18 +104,24 @@ class ColourGeneratorFragment : Fragment() {
 
     private fun observeLoadingStatus() {
         val loading = viewModel.loading
-        loading.observe(viewLifecycleOwner, Observer { loading ->
-            if (loading) {
+        loading.observe(viewLifecycleOwner, Observer { isLoading ->
+            if (isLoading) {
+                fab.isClickable = false
                 splat.visibility = View.INVISIBLE
                 colour_name.visibility = View.INVISIBLE
             } else {
-                splat.visibility = View.VISIBLE
-                colour_name.visibility = View.VISIBLE
+                if (!isFisrtSplat) {
+                    fab.isClickable = true
+                    splat.visibility = View.VISIBLE
+                    colour_name.visibility = View.VISIBLE
+                }
+                isFisrtSplat = false
             }
         })
     }
 
     private fun performAnimation() {
+        paint_and_brush_layout.visibility = View.VISIBLE
         val animator = ValueAnimator.ofFloat(-0.54f, 0.8f)
         animator.duration = 2000L
         animator.addUpdateListener { valueAnimator ->

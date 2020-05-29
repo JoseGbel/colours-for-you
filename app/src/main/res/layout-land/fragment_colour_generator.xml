@@ -9,28 +9,30 @@
     <FrameLayout
         android:id="@+id/paint_and_brush_layout"
         android:layout_width="match_parent"
-        android:layout_height="260dp"
+        android:layout_height="220dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.069"
-        android:visibility="invisible">
+        app:layout_constraintVertical_bias="0.105">
 
         <FrameLayout
             android:id="@+id/paint"
             android:layout_width="match_parent"
             android:layout_height="43dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="26dp"
+            android:layout_marginStart="30dp"
             android:background="@android:color/black" />
 
         <ImageView
             android:id="@+id/brush"
-            android:layout_width="176dp"
-            android:layout_height="183dp"
-            android:src="@drawable/simple_brush" />
+            android:layout_width="180dp"
+            android:layout_height="115dp"
+            android:layout_marginTop="17dp"
+            android:src="@drawable/simple_brush"
+            android:contentDescription="@string/paint_brush_image" />
 
     </FrameLayout>
 
@@ -57,7 +59,8 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.703"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        android:contentDescription="@string/splat_image" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"

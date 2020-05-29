@@ -11,8 +11,12 @@
     </string>
     <string name="ok">OK</string>
     <string name="unable_to_connect">Unable to connect</string>
-    <string name="colour_generator">Colour Generator</string>
+    <string name="colour_generator">Colour generator</string>
     <string name="my_colours">My colours</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="colours_for_you">Colours For You</string>
+    <string name="ao_com">ao.com</string>
+    <string name="app_logo">App logo</string>
+    <string name="paint_brush_image">Paint Brush image</string>
 </resources>

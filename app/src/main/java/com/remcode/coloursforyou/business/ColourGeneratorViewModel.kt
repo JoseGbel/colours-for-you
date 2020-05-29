@@ -23,24 +23,22 @@ class ColourGeneratorViewModel(application: Application) : AndroidViewModel(appl
     val word : LiveData<List<String>>
         get() = _word
 
-    private val _loading = MutableLiveData(true)
+    private val _loading = MutableLiveData(false)
     val loading : LiveData<Boolean>
         get() = _loading
 
     private val repository: MainRepositoryImpl
-    val allColours: LiveData<List<Colour>>
 
     init {
         val coloursDao = ColourDatabase.getDatabase(application).colourDatabaseDao
         repository = MainRepositoryImpl(colourDao = coloursDao)
-        allColours = repository.allColours
     }
 
     fun getRandomHexColour(): String? {
         return Random.nextInt(0, 16777215).toHexColourString()
     }
 
-    fun getRandomWord() {
+    fun getRandomWord(colour : String?) {
         _loading.postValue(true)
         _playSplatFx.value = false
         try {
@@ -48,26 +46,31 @@ class ColourGeneratorViewModel(application: Application) : AndroidViewModel(appl
                 Log.e(TAG, "CoroutineExceptionHandler got $exception")
             }
             val job = viewModelScope.launch(Dispatchers.IO + handler) {
-                delay(2000)
                 _word.postValue(repository.getRandomWord())
+                delay(2000)
             }
 
             job.invokeOnCompletion {
+                if (colour != null)
+                    insert(Colour(colour, word.value!![0]))
                 _loading.postValue(false)
                 _playSplatFx.postValue(true)
             }
         }catch (exception: Exception){
-            // network call's unhappy path ...
+            // network call's unhappy path ... do something
             if (exception.message != null)
                 Log.e(TAG, exception.message!!)
         }
     }
 
-    fun insert(colour: Colour) = viewModelScope.launch(Dispatchers.IO) {
+    private fun insert(colour: Colour) = viewModelScope.launch(Dispatchers.IO) {
         repository.insertColour(colour)
     }
+}
 
-    fun deleteAll() = viewModelScope.launch(Dispatchers.IO) {
-        repository.deleteColours()
+class ColourGeneratorViewModelFactory(private val application: Application) : ViewModelProvider.Factory{
+
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        return ColourGeneratorViewModel(application) as T
     }
 }

@@ -14,7 +14,7 @@ abstract class ColourDatabase : RoomDatabase() {
     abstract val colourDatabaseDao: ColourDatabaseDao
 
     companion object {
-        // Singleton prevents multiple instances of database opening at the
+        // singleton prevents multiple instances of database opening at the
         // same time.
         @Volatile
         private var INSTANCE: ColourDatabase? = null

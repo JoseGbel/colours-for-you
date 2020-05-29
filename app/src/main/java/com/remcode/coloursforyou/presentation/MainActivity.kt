@@ -29,12 +29,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         navigationView.setNavigationItemSelectedListener(this)
 
-        val toggle: ActionBarDrawerToggle = ActionBarDrawerToggle(
-            this,
-            drawerLayout,
-            toolbar,
-            R.string.navigation_drawer_open,
-            R.string.navigation_drawer_close
+        val toggle = ActionBarDrawerToggle(
+            this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close
         )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
@@ -42,15 +38,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // initialise the Network Status detector
         NetworkStatusLiveData.init(application)
 
-
         if(savedInstanceState == null){
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, ColourGeneratorFragment())
                 .commit()
             navigationView.setCheckedItem(R.id.nav_colour_generator)
         }
-
-
     }
 
     override fun onBackPressed() {
@@ -70,7 +63,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             R.id.nav_my_colours -> {
                 supportFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, ColourListFragment())
+                    .replace(R.id.fragment_container, MyColoursFragment())
                     .commit()
             }
         }

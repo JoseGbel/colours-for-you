@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.remcode.coloursforyou.R
 import com.remcode.coloursforyou.data.models.Colour
+import com.remcode.coloursforyou.utils.capitalize
 
 class ColourListAdapter internal constructor(
     context: Context
@@ -30,7 +31,7 @@ class ColourListAdapter internal constructor(
 
     override fun onBindViewHolder(holder: ColourViewHolder, position: Int) {
         val current = colours[position]
-        holder.colourName.text = current.name
+        holder.colourName.text = current.name.capitalize()
         holder.colourImage.setColorFilter(Color.parseColor(current.hexColour))
     }
 

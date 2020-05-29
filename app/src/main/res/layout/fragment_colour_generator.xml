@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <FrameLayout
         android:id="@+id/paint_and_brush_layout"
         android:layout_width="match_parent"
@@ -37,13 +38,12 @@
         android:id="@+id/colour_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Color name!"
         android:layout_marginTop="@dimen/colour_name_margin_top"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/splat"
         app:layout_constraintVertical_bias="0.103"
-        android:textSize="@dimen/color_name_text"
+        android:textSize="24sp"
         android:visibility="invisible"/>
 
     <ImageView
@@ -57,7 +57,8 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.503"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        android:contentDescription="@string/splat_image" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"

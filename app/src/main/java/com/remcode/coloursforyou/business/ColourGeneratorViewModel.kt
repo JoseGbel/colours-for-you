@@ -5,13 +5,19 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.remcode.coloursforyou.data.local.ColourDatabase
 import com.remcode.coloursforyou.data.models.Colour
+import com.remcode.coloursforyou.data.repository.MainRepository
 import com.remcode.coloursforyou.data.repository.MainRepositoryImpl
+import com.remcode.coloursforyou.utils.DefaultDispatcherProvider
+import com.remcode.coloursforyou.utils.DispatcherProvider
 import com.remcode.coloursforyou.utils.toHexColourString
 import kotlinx.coroutines.*
 import java.lang.Exception
 import kotlin.random.Random
 
-class ColourGeneratorViewModel(application: Application) : AndroidViewModel(application) {
+class ColourGeneratorViewModel(application: Application,
+                               val repository: MainRepository = MainRepositoryImpl(colourDao = ColourDatabase.getDatabase(application).colourDatabaseDao),
+                               private val dispatchers: DispatcherProvider = DefaultDispatcherProvider())
+    : AndroidViewModel(application) {
 
     private val TAG = "AppDebug"
 
@@ -27,11 +33,11 @@ class ColourGeneratorViewModel(application: Application) : AndroidViewModel(appl
     val loading : LiveData<Boolean>
         get() = _loading
 
-    private val repository: MainRepositoryImpl
+//    private val repository: MainRepositoryImpl
 
     init {
-        val coloursDao = ColourDatabase.getDatabase(application).colourDatabaseDao
-        repository = MainRepositoryImpl(colourDao = coloursDao)
+//        val coloursDao = ColourDatabase.getDatabase(application).colourDatabaseDao
+//        repository = MainRepositoryImpl(colourDao = coloursDao)
     }
 
     fun getRandomHexColour(): String? {
@@ -41,11 +47,12 @@ class ColourGeneratorViewModel(application: Application) : AndroidViewModel(appl
     fun getRandomWord(colour : String?) {
         _loading.postValue(true)
         _playSplatFx.value = false
+
         try {
             val handler = CoroutineExceptionHandler { _, exception ->
                 Log.e(TAG, "CoroutineExceptionHandler got $exception")
             }
-            val job = viewModelScope.launch(Dispatchers.IO + handler) {
+            val job = viewModelScope.launch(dispatchers.io() + handler) {
                 _word.postValue(repository.getRandomWord())
                 delay(2000)
             }
@@ -63,7 +70,7 @@ class ColourGeneratorViewModel(application: Application) : AndroidViewModel(appl
         }
     }
 
-    private fun insert(colour: Colour) = viewModelScope.launch(Dispatchers.IO) {
+    fun insert(colour: Colour) = viewModelScope.launch(dispatchers.io()) {
         repository.insertColour(colour)
     }
 }

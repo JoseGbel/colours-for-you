@@ -3,7 +3,7 @@ package com.remcode.coloursforyou.network
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface GitHubService {
+interface ColourNamesService {
 
     @GET("/word?number=1")
     suspend fun getRandomWord() : List<String>

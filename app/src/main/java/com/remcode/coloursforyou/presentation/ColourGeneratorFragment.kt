@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.fragment_colour_generator.*
 
 class ColourGeneratorFragment : Fragment() {
 
-    private var isFisrtSplat: Boolean = true
+    private var isFirstSplat: Boolean = true
     private var connected: Boolean = false
     private lateinit var viewModel: ColourGeneratorViewModel
 
@@ -35,9 +35,9 @@ class ColourGeneratorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel =
-            ViewModelProvider(this, ColourGeneratorViewModelFactory(requireActivity().application))
-                .get(ColourGeneratorViewModel::class.java)
+        viewModel = ViewModelProvider(this, ColourGeneratorViewModelFactory(
+                requireActivity().application)
+            ).get(ColourGeneratorViewModel::class.java)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -110,12 +110,12 @@ class ColourGeneratorFragment : Fragment() {
                 splat.visibility = View.INVISIBLE
                 colour_name.visibility = View.INVISIBLE
             } else {
-                if (!isFisrtSplat) {
+                if (!isFirstSplat) {
                     fab.isClickable = true
                     splat.visibility = View.VISIBLE
                     colour_name.visibility = View.VISIBLE
                 }
-                isFisrtSplat = false
+                isFirstSplat = false
             }
         })
     }

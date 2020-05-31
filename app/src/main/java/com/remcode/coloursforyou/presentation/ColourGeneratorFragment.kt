@@ -35,9 +35,11 @@ class ColourGeneratorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(this, ColourGeneratorViewModelFactory(
-                requireActivity().application)
-            ).get(ColourGeneratorViewModel::class.java)
+        viewModel = ViewModelProvider(
+            this, ColourGeneratorViewModelFactory(
+                requireActivity().application
+            )
+        ).get(ColourGeneratorViewModel::class.java)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -49,7 +51,7 @@ class ColourGeneratorFragment : Fragment() {
 
         observeLoadingStatus()
 
-        observeSplatFxCue(soundPool, splatSoundId)
+        observeCommands(soundPool, splatSoundId)
 
         observeNetworkConnectivity()
 
@@ -75,11 +77,11 @@ class ColourGeneratorFragment : Fragment() {
         fab.backgroundTintList = ColorStateList.valueOf(Color.parseColor(randomColour))
     }
 
-    private fun observeSplatFxCue(soundPool: SoundPool, splatSoundId: Int) {
-        val splatFx = viewModel.playSplatFx
-        splatFx.observe(viewLifecycleOwner, Observer { playSound ->
-            if (playSound) {
-                soundPool.play(splatSoundId, 1f, 1f, 1, 0, 1f)
+    private fun observeCommands(soundPool: SoundPool, splatSoundId: Int) {
+        viewModel.command.observe(viewLifecycleOwner, Observer {
+            when (it) {
+                is ColourGeneratorViewModel.Command.PlaySoundEffect ->
+                    soundPool.play(splatSoundId, 1f, 1f, 1, 0, 1f)
             }
         })
     }

@@ -8,7 +8,7 @@ import androidx.room.Query
 import com.remcode.coloursforyou.data.models.Colour
 
 @Dao
-interface ColourDatabaseDao {
+interface ColourDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertColour(colour: Colour)
 

@@ -11,7 +11,7 @@ import com.remcode.coloursforyou.data.models.Colour
     exportSchema = true)
 abstract class ColourDatabase : RoomDatabase() {
 
-    abstract val colourDatabaseDao: ColourDatabaseDao
+    abstract val colourDao: ColourDao
 
     companion object {
         // singleton prevents multiple instances of database opening at the
@@ -26,7 +26,7 @@ abstract class ColourDatabase : RoomDatabase() {
             }
             synchronized(this) {
                 val instance = Room.databaseBuilder(
-                    context.applicationContext,
+                    context,
                     ColourDatabase::class.java,
                     "colour_database"
                 ).build()

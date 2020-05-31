@@ -1,28 +1,24 @@
 package com.remcode.coloursforyou.business
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.*
 import com.remcode.coloursforyou.data.local.ColourDatabase
 import com.remcode.coloursforyou.data.models.Colour
+import com.remcode.coloursforyou.data.repository.MainRepository
 import com.remcode.coloursforyou.data.repository.MainRepositoryImpl
-import com.remcode.coloursforyou.utils.toHexColourString
+import com.remcode.coloursforyou.utils.DefaultDispatcherProvider
+import com.remcode.coloursforyou.utils.DispatcherProvider
 import kotlinx.coroutines.*
-import java.lang.Exception
-import kotlin.random.Random
 
-class MyColoursViewModel(application: Application) : AndroidViewModel(application) {
+class MyColoursViewModel(application: Application,
+                         private val repository: MainRepository = MainRepositoryImpl(
+                             colourDao = ColourDatabase.getDatabase(application).colourDao),
+                         private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
+) : AndroidViewModel(application) {
 
-    private val repository: MainRepositoryImpl
-    val allColours: LiveData<List<Colour>>
+    val allColours: LiveData<List<Colour>> = repository.allColours
 
-    init {
-        val coloursDao = ColourDatabase.getDatabase(application).colourDatabaseDao
-        repository = MainRepositoryImpl(colourDao = coloursDao)
-        allColours = repository.allColours
-    }
-
-    fun deleteAll() = viewModelScope.launch(Dispatchers.IO) {
+    fun deleteAll() = viewModelScope.launch(dispatchers.io()) {
         repository.deleteColours()
     }
 }

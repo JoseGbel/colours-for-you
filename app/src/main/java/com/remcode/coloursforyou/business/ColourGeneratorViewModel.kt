@@ -7,19 +7,19 @@ import com.remcode.coloursforyou.data.local.ColourDatabase
 import com.remcode.coloursforyou.data.models.Colour
 import com.remcode.coloursforyou.data.repository.MainRepository
 import com.remcode.coloursforyou.data.repository.MainRepositoryImpl
-import com.remcode.coloursforyou.utils.DefaultDispatcherProvider
-import com.remcode.coloursforyou.utils.DispatcherProvider
-import com.remcode.coloursforyou.utils.toHexColourString
+import com.remcode.coloursforyou.utils.*
 import kotlinx.coroutines.*
 import java.lang.Exception
 import kotlin.random.Random
 
 class ColourGeneratorViewModel(application: Application,
-                               val repository: MainRepository = MainRepositoryImpl(colourDao = ColourDatabase.getDatabase(application).colourDatabaseDao),
+                               val repository: MainRepository = MainRepositoryImpl(colourDao = ColourDatabase.getDatabase(application).colourDao),
                                private val dispatchers: DispatcherProvider = DefaultDispatcherProvider())
     : AndroidViewModel(application) {
 
     private val TAG = "AppDebug"
+
+    val command = SingleLiveEvent<Command>()
 
     private val _playSplatFx = MutableLiveData(false)
     val playSplatFx: LiveData<Boolean>
@@ -33,20 +33,13 @@ class ColourGeneratorViewModel(application: Application,
     val loading : LiveData<Boolean>
         get() = _loading
 
-//    private val repository: MainRepositoryImpl
-
-    init {
-//        val coloursDao = ColourDatabase.getDatabase(application).colourDatabaseDao
-//        repository = MainRepositoryImpl(colourDao = coloursDao)
-    }
-
-    fun getRandomHexColour(): String? {
+    fun getRandomHexColour(): String {
         return Random.nextInt(0, 16777215).toHexColourString()
     }
 
-    fun getRandomWord(colour : String?) {
+    fun getRandomWord(colour : String) {
         _loading.postValue(true)
-        _playSplatFx.value = false
+//        _playSplatFx.value = false
 
         try {
             val handler = CoroutineExceptionHandler { _, exception ->
@@ -58,10 +51,9 @@ class ColourGeneratorViewModel(application: Application,
             }
 
             job.invokeOnCompletion {
-                if (colour != null)
-                    insert(Colour(colour, word.value!![0]))
+                insert(Colour(colour, word.value!![0]))
                 _loading.postValue(false)
-                _playSplatFx.postValue(true)
+                command.postValue(Command.PlaySoundEffect())
             }
         }catch (exception: Exception){
             // network call's unhappy path ... do something
@@ -73,6 +65,10 @@ class ColourGeneratorViewModel(application: Application,
     fun insert(colour: Colour) = viewModelScope.launch(dispatchers.io()) {
         repository.insertColour(colour)
     }
+
+    sealed class Command {
+        class PlaySoundEffect : Command()
+    }
 }
 
 class ColourGeneratorViewModelFactory(private val application: Application) : ViewModelProvider.Factory{
@@ -81,3 +77,4 @@ class ColourGeneratorViewModelFactory(private val application: Application) : Vi
         return ColourGeneratorViewModel(application) as T
     }
 }
+

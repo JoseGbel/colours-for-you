@@ -10,10 +10,11 @@ import com.remcode.coloursforyou.utils.DefaultDispatcherProvider
 import com.remcode.coloursforyou.utils.DispatcherProvider
 import kotlinx.coroutines.*
 
-class MyColoursViewModel(application: Application,
-                         private val repository: MainRepository = MainRepositoryImpl(
-                             colourDao = ColourDatabase.getDatabase(application).colourDao),
-                         private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
+class MyColoursViewModel(
+    application: Application,
+    private val repository: MainRepository
+        = MainRepositoryImpl(colourDao = ColourDatabase.getDatabase(application).colourDao),
+    private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
 ) : AndroidViewModel(application) {
 
     val allColours: LiveData<List<Colour>> = repository.allColours

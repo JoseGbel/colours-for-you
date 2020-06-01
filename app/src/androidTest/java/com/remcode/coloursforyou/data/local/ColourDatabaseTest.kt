@@ -4,11 +4,9 @@ import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
-import androidx.test.espresso.matcher.ViewMatchers.assertThat
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.remcode.coloursforyou.data.models.Colour
 import kotlinx.coroutines.runBlocking
-import org.hamcrest.CoreMatchers.equalTo
 import org.junit.*
 import org.junit.runner.RunWith
 import java.io.IOException

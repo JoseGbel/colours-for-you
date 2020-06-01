@@ -16,10 +16,6 @@ class MainRepositoryImpl(private val colourNamesService : ColourNamesService = C
         return colourNamesService.getRandomWord()
     }
 
-    override suspend fun getWords(number: Int): List<String> {
-        return colourNamesService.getWords(number)
-    }
-
     override suspend fun insertColour(colour: Colour) {
         colourDao.insertColour(colour)
     }

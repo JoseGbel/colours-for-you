@@ -8,12 +8,9 @@ import com.nhaarman.mockitokotlin2.verify
 import com.remcode.coloursforyou.business.ColourGeneratorViewModel.*
 import com.remcode.coloursforyou.data.models.Colour
 import com.remcode.coloursforyou.data.repository.MainRepository
-import com.remcode.coloursforyou.utils.SingleLiveEvent
 import com.remcode.testUtils.CoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
-import org.hamcrest.CoreMatchers
-import org.junit.Assert
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
@@ -45,9 +42,6 @@ class ColourGeneratorViewModelTest {
 
     @Mock
     lateinit var mockObserver: Observer<Command>
-
-    @Mock
-    lateinit var mockCommand: SingleLiveEvent<Command>
 
     @Mock
     lateinit var repository: MainRepository
@@ -96,37 +90,30 @@ class ColourGeneratorViewModelTest {
 
     @Test
     fun should_updateLoadingLiveData_when_getRandomWord() = coroutineTestRule.testDispatcher.runBlockingTest {
-        // given
+        // Given
         `when`(repository.getRandomWord()).thenReturn(listOf(WORD))
-
         val mockLoadingObserver = mock(Observer::class.java) as Observer<Boolean>
         SUT.loading.observeForever(mockLoadingObserver)
-
-        // when
+        // When
         SUT.getRandomWord(COLOUR)
-
-        // then
+        // Then
         val inOrder = inOrder(mockLoadingObserver)
         inOrder.verify(mockLoadingObserver, times(1)).onChanged(false)
         inOrder.verify(mockLoadingObserver, times(1)).onChanged(true)
     }
 
-
     @Test
     fun should_updatePlaySplatFxLiveData_when_getRandomWord() = coroutineTestRule.testDispatcher.runBlockingTest {
-        // given
+        // Given
         `when`(repository.getRandomWord()).thenReturn(listOf(WORD))
-
         SUT.command.observeForever(mockObserver)
-        // when
+        // When
         SUT.getRandomWord(COLOUR)
-
     }
 
     @Test
     fun getRandomHexColour_returnColourString() {
         val colour = SUT.getRandomHexColour()
-
         assertEquals(colour.count(), 7)
     }
 }

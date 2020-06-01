@@ -7,8 +7,6 @@ interface MainRepository {
     val allColours : LiveData<List<Colour>>
 
     suspend fun getRandomWord() : List<String>
-    suspend fun getWords(number: Int) : List<String>
-
     suspend fun insertColour(colour: Colour)
     suspend fun deleteColours()
 }

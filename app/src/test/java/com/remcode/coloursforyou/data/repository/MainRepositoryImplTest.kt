@@ -14,9 +14,7 @@ import org.junit.Before
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
-import org.mockito.ArgumentCaptor
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
+import org.mockito.*
 
 @ExperimentalCoroutinesApi
 class MainRepositoryImplTest {
@@ -26,45 +24,40 @@ class MainRepositoryImplTest {
 
     private val HEXCOLOUR: String = "#FFFFFF"
     private val NAME: String = "aName"
-
-    lateinit var SUT : MainRepositoryImpl
-
-    @Mock
-    lateinit var colourDao: ColourDao
+    private val COLOUR = Colour(HEXCOLOUR, NAME)
 
     @Mock
-    lateinit var colourNameService: ColourNamesService
+    lateinit var colourDaoMock: ColourDao
+    @Mock
+    lateinit var colourNameServiceMock: ColourNamesService
+
+    private lateinit var SUT : MainRepositoryImpl
 
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
-        SUT = MainRepositoryImpl(colourNameService, colourDao)
+        SUT = MainRepositoryImpl(colourNameServiceMock, colourDaoMock)
     }
 
     @Test
     fun deleteColours_callsMethodInTheDaoObject() = coroutineTestRule.testDispatcher.runBlockingTest {
         SUT.deleteColours()
-        verify(colourDao).deleteAllColours()
-        verifyNoMoreInteractions(colourNameService)
+        verify(colourDaoMock).deleteAllColours()
+        verifyNoMoreInteractions(colourNameServiceMock)
     }
 
     @Test
-    fun getRandomWord_callsMethodInTheRemoteApi() = coroutineTestRule.testDispatcher.runBlockingTest {
+    fun getRandomWord_callsMethodCorrectlyInTheRemoteApi() = coroutineTestRule.testDispatcher.runBlockingTest {
         SUT.getRandomWord()
-        verify(colourNameService).getRandomWord()
-        verifyNoMoreInteractions(colourDao)
+        verify(colourNameServiceMock).getRandomWord()
     }
 
-
     @Test
-    fun insertColour_callsMethodInTheRemoteApi() = coroutineTestRule.testDispatcher.runBlockingTest {
-        val ac  = argumentCaptor<Colour>()
-        val captor = argumentCaptor<() -> Unit>()
-        val colour = Colour(HEXCOLOUR, NAME)
-        SUT.insertColour(colour)
-        verify(colourDao).insertColour(ac.capture())
-        verifyNoMoreInteractions(colourDao)
-        assertEquals(ac.firstValue, HEXCOLOUR)
-        assertEquals(ac.secondValue, NAME)
+    fun insertColour_passRightArgumentToColourDao() = coroutineTestRule.testDispatcher.runBlockingTest {
+        val colourCaptor = argumentCaptor<Colour>()
+        SUT.insertColour(COLOUR)
+        verify(colourDaoMock).insertColour(colourCaptor.capture())
+        verifyNoMoreInteractions(colourNameServiceMock)
+        assertEquals(colourCaptor.firstValue, COLOUR)
     }
 }

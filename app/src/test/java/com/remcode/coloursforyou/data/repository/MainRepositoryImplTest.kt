@@ -3,6 +3,7 @@ package com.remcode.coloursforyou.data.repository
 import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
+import com.remcode.TestData
 import com.remcode.coloursforyou.data.local.ColourDao
 import com.remcode.coloursforyou.data.models.Colour
 import com.remcode.coloursforyou.network.ColourNamesService
@@ -10,7 +11,6 @@ import com.remcode.testUtils.CoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Before
-
 import org.junit.Assert.*
 import org.junit.Rule
 import org.junit.Test
@@ -22,9 +22,7 @@ class MainRepositoryImplTest {
     @get:Rule
     val coroutineTestRule = CoroutineTestRule()
 
-    private val HEXCOLOUR: String = "#FFFFFF"
-    private val NAME: String = "aName"
-    private val COLOUR = Colour(HEXCOLOUR, NAME)
+    private val COLOUR : Colour = TestData.COLOUR
 
     @Mock
     lateinit var colourDaoMock: ColourDao

@@ -13,7 +13,7 @@ import java.lang.Exception
 import kotlin.random.Random
 
 class ColourGeneratorViewModel(application: Application,
-                               val repository: MainRepository = MainRepositoryImpl(colourDao = ColourDatabase.getDatabase(application).colourDao),
+                               private val repository: MainRepository = MainRepositoryImpl(colourDao = ColourDatabase.getDatabase(application).colourDao),
                                private val dispatchers: DispatcherProvider = DefaultDispatcherProvider())
     : AndroidViewModel(application) {
 
@@ -21,41 +21,43 @@ class ColourGeneratorViewModel(application: Application,
 
     val command = SingleLiveEvent<Command>()
 
-    private val _playSplatFx = MutableLiveData(false)
-    val playSplatFx: LiveData<Boolean>
-        get() = _playSplatFx
+    private val _wordLiveData = MutableLiveData<List<String>>()
+    val wordLiveData : LiveData<List<String>>
+        get() = _wordLiveData
 
-    private val _word = MutableLiveData<List<String>>()
-    val word : LiveData<List<String>>
-        get() = _word
+    private val _colourLiveData = MutableLiveData<Colour>()
+    val colourLiveData : LiveData<Colour>
+        get() = _colourLiveData
 
-    private val _loading = MutableLiveData(false)
-    val loading : LiveData<Boolean>
-        get() = _loading
+    private val _loadingLiveData = MutableLiveData(false)
+    val loadingLiveData : LiveData<Boolean>
+        get() = _loadingLiveData
 
-    fun getRandomHexColour(): String {
+    fun generateRandomHexColour(): String {
         return Random.nextInt(0, 16777215).toHexColourString()
     }
 
-    fun getRandomWord(colour : String) {
-        _loading.postValue(true)
-//        _playSplatFx.value = false
+    fun fetchNewColour(colour : String) {
+        _loadingLiveData.postValue(true)
 
         try {
             val handler = CoroutineExceptionHandler { _, exception ->
                 Log.e(TAG, "CoroutineExceptionHandler got $exception")
             }
+            EspressoIdlingResource.increment()
             val job = viewModelScope.launch(dispatchers.io() + handler) {
-                _word.postValue(repository.getRandomWord())
+                val word = repository.getRandomWord()
+                _wordLiveData.postValue(word)
+                _colourLiveData.postValue(Colour(colour, word[0]))
                 delay(2000)
             }
 
             job.invokeOnCompletion {
-                insert(Colour(colour, word.value!![0]))
-                _loading.postValue(false)
+                EspressoIdlingResource.decrement()
+                _loadingLiveData.postValue(false)
                 command.postValue(Command.PlaySoundEffect())
             }
-        }catch (exception: Exception){
+        } catch (exception: Exception){
             // network call's unhappy path ... do something
             if (exception.message != null)
                 Log.e(TAG, exception.message!!)
@@ -72,7 +74,6 @@ class ColourGeneratorViewModel(application: Application,
 }
 
 class ColourGeneratorViewModelFactory(private val application: Application) : ViewModelProvider.Factory{
-
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return ColourGeneratorViewModel(application) as T
     }

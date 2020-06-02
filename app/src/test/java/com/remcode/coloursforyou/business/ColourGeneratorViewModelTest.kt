@@ -3,8 +3,11 @@ package com.remcode.coloursforyou.business
 import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
+import com.nhaarman.mockitokotlin2.KArgumentCaptor
+import com.nhaarman.mockitokotlin2.argumentCaptor
 import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
+import com.remcode.TestData
 import com.remcode.coloursforyou.business.ColourGeneratorViewModel.*
 import com.remcode.coloursforyou.data.models.Colour
 import com.remcode.coloursforyou.data.repository.MainRepository
@@ -25,8 +28,10 @@ import org.mockito.Mockito.*
 @RunWith(JUnit4::class)
 class ColourGeneratorViewModelTest {
 
-    private val COLOUR: String = "#FFFFFF"
-    private val WORD: String = "aWord"
+    private val HEXCOLOUR: String = TestData.HEXCOLOUR
+    private val COLOUR: Colour = TestData.COLOUR
+    private val COLOURNAME = TestData.COLOURNAME
+    private val COLOURNAMES = TestData.COLOURNAMES
 
     @JvmField
     @Rule
@@ -38,64 +43,64 @@ class ColourGeneratorViewModelTest {
     val coroutineTestRule = CoroutineTestRule()
 
     @Mock
-    lateinit var application: Application
+    lateinit var applicationMock: Application
 
     @Mock
-    lateinit var mockObserver: Observer<Command>
+    lateinit var observerMock: Observer<Command>
 
     @Mock
-    lateinit var repository: MainRepository
+    lateinit var repositoryMock: MainRepository
 
     lateinit var SUT: ColourGeneratorViewModel
 
     @Before
     fun setUp() {
         MockitoAnnotations.initMocks(this)
-        SUT = ColourGeneratorViewModel(application, repository, coroutineTestRule.testDispatcherProvider)
+        SUT = ColourGeneratorViewModel(applicationMock, repositoryMock, coroutineTestRule.testDispatcherProvider)
     }
 
     @Test
     fun getRandomWord_callsMethodInRepository() = coroutineTestRule.testDispatcher.runBlockingTest {
         // When
-        SUT.getRandomWord(COLOUR)
+        SUT.fetchNewColour(HEXCOLOUR)
         // Then
-        verify(repository).getRandomWord()
+        verify(repositoryMock).getRandomWord()
     }
 
     @Test
     fun insert_callsMethodInRepositoryWithRightParams() = coroutineTestRule.testDispatcher.runBlockingTest {
         // Given
-        `when`(repository.getRandomWord()).thenReturn(listOf(WORD))
-        val ac : ArgumentCaptor<Colour> = ArgumentCaptor.forClass(Colour::class.java)
+        `when`(repositoryMock.getRandomWord()).thenReturn(COLOURNAMES)
+        val ac : KArgumentCaptor<Colour> = argumentCaptor()
         // When
-        SUT.getRandomWord(COLOUR)
+        SUT.insert(COLOUR)
         // Then
-        verify(repository).insertColour(ac.capture())
-        assertEquals(ac.value.name, WORD)
-        assertEquals(ac.value.hexColour, COLOUR)
+        verify(repositoryMock).insertColour(ac.capture())
+        assertEquals(ac.firstValue.name, COLOURNAME)
+        assertEquals(ac.firstValue.hexColour, HEXCOLOUR)
     }
 
     @Test
     fun getRandomWord_success_updatesLiveData() = coroutineTestRule.testDispatcher.runBlockingTest {
         // Given
         val mockWordListObserver = mock(Observer::class.java) as Observer<List<String>>
-        `when`(repository.getRandomWord()).thenReturn(listOf(WORD))
-        SUT.word.observeForever(mockWordListObserver)
+        `when`(repositoryMock.getRandomWord()).thenReturn(listOf(COLOURNAME))
+        SUT.wordLiveData.observeForever(mockWordListObserver)
         // When
-        SUT.getRandomWord(COLOUR)
+        SUT.fetchNewColour(HEXCOLOUR)
         // Then
-        verify(mockWordListObserver, times(1)).onChanged(listOf(WORD))
-        assertEquals(SUT.word.value, listOf(WORD))
+        verify(mockWordListObserver, times(1)).onChanged(COLOURNAMES)
+        assertEquals(SUT.wordLiveData.value, listOf(COLOURNAME))
     }
 
     @Test
-    fun should_updateLoadingLiveData_when_getRandomWord() = coroutineTestRule.testDispatcher.runBlockingTest {
+    fun getRandomColour_success_updatesLoadingLiveData() = coroutineTestRule.testDispatcher.runBlockingTest {
         // Given
-        `when`(repository.getRandomWord()).thenReturn(listOf(WORD))
+        `when`(repositoryMock.getRandomWord()).thenReturn(COLOURNAMES)
         val mockLoadingObserver = mock(Observer::class.java) as Observer<Boolean>
-        SUT.loading.observeForever(mockLoadingObserver)
+        SUT.loadingLiveData.observeForever(mockLoadingObserver)
         // When
-        SUT.getRandomWord(COLOUR)
+        SUT.fetchNewColour(HEXCOLOUR)
         // Then
         val inOrder = inOrder(mockLoadingObserver)
         inOrder.verify(mockLoadingObserver, times(1)).onChanged(false)
@@ -103,17 +108,17 @@ class ColourGeneratorViewModelTest {
     }
 
     @Test
-    fun should_updatePlaySplatFxLiveData_when_getRandomWord() = coroutineTestRule.testDispatcher.runBlockingTest {
+    fun getRandomColour_success_updatePlaySplatFxLiveData_when_getRandomWord() = coroutineTestRule.testDispatcher.runBlockingTest {
         // Given
-        `when`(repository.getRandomWord()).thenReturn(listOf(WORD))
-        SUT.command.observeForever(mockObserver)
+        `when`(repositoryMock.getRandomWord()).thenReturn(COLOURNAMES)
+        SUT.command.observeForever(observerMock)
         // When
-        SUT.getRandomWord(COLOUR)
+        SUT.fetchNewColour(HEXCOLOUR)
     }
 
     @Test
     fun getRandomHexColour_returnColourString() {
-        val colour = SUT.getRandomHexColour()
+        val colour = SUT.generateRandomHexColour()
         assertEquals(colour.count(), 7)
     }
 }

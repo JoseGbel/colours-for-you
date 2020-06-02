@@ -47,19 +47,19 @@ class ColourGeneratorFragment : Fragment() {
 
         val (soundPool, splatSoundId) = buildSoundPool()
 
-        observeWordChanges()
-
         observeLoadingStatus()
 
         observeCommands(soundPool, splatSoundId)
 
         observeNetworkConnectivity()
 
+        observeColourLiveData()
+
         fab.setOnClickListener {
-            val randomColour = viewModel.getRandomHexColour()
+            val randomColour = viewModel.generateRandomHexColour()
 
             if (connected) {
-                viewModel.getRandomWord(randomColour)
+                val name = viewModel.fetchNewColour(randomColour)
 
                 performAnimation()
 
@@ -68,6 +68,13 @@ class ColourGeneratorFragment : Fragment() {
                 displayUnableToConnectDialog()
             }
         }
+    }
+
+    private fun observeColourLiveData() {
+        viewModel.colourLiveData.observe(viewLifecycleOwner, Observer { colour ->
+            colour_name.text = getString(R.string.colour_sample, colour.name.capitalize())
+            viewModel.insert(colour)
+        })
     }
 
     private fun changeViewColours(randomColour: String?) {
@@ -97,15 +104,8 @@ class ColourGeneratorFragment : Fragment() {
         return Pair(soundPool, splatSoundId)
     }
 
-    private fun observeWordChanges() {
-        val randomWord = viewModel.word
-        randomWord.observe(viewLifecycleOwner, Observer { words ->
-            colour_name.text = getString(R.string.colour_sample, words[0].capitalize())
-        })
-    }
-
     private fun observeLoadingStatus() {
-        val loading = viewModel.loading
+        val loading = viewModel.loadingLiveData
         loading.observe(viewLifecycleOwner, Observer { isLoading ->
             if (isLoading) {
                 fab.isClickable = false

@@ -14,7 +14,7 @@ class FailedConnectionDialogFragment : DialogFragment() {
         return activity?.let {
             val builder = AlertDialog.Builder(it)
             builder.setMessage(getString(R.string.possible_causes))
-                .setPositiveButton(getString(R.string.ok)) { dialog, id -> dialog.dismiss() }
+                .setPositiveButton(getString(R.string.ok)) { dialog, _ -> dialog.dismiss() }
                 .setTitle(getString(R.string.unable_to_connect))
             builder.create()
         } ?: throw IllegalStateException("Activity cannot be null")

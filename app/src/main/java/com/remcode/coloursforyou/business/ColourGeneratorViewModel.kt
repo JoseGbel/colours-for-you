@@ -14,7 +14,8 @@ import kotlin.random.Random
 
 class ColourGeneratorViewModel(application: Application,
                                private val repository: MainRepository = MainRepositoryImpl(colourDao = ColourDatabase.getDatabase(application).colourDao),
-                               private val dispatchers: DispatcherProvider = DefaultDispatcherProvider())
+                               private val dispatchers: DispatcherProvider = DefaultDispatcherProvider()
+)
     : AndroidViewModel(application) {
 
     private val TAG = "AppDebug"

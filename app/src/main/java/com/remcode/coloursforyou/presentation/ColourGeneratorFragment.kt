@@ -59,7 +59,7 @@ class ColourGeneratorFragment : Fragment() {
             val randomColour = viewModel.generateRandomHexColour()
 
             if (connected) {
-                val name = viewModel.fetchNewColour(randomColour)
+                viewModel.fetchNewColour(randomColour)
 
                 performAnimation()
 

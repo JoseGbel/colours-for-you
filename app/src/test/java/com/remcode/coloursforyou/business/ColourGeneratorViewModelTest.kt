@@ -3,10 +3,6 @@ package com.remcode.coloursforyou.business
 import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
-import com.nhaarman.mockitokotlin2.KArgumentCaptor
-import com.nhaarman.mockitokotlin2.argumentCaptor
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
 import com.remcode.TestData
 import com.remcode.coloursforyou.business.ColourGeneratorViewModel.*
 import com.remcode.coloursforyou.data.models.Colour
@@ -14,6 +10,10 @@ import com.remcode.coloursforyou.data.repository.MainRepository
 import com.remcode.testUtils.CoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
+import com.nhaarman.mockitokotlin2.KArgumentCaptor
+import com.nhaarman.mockitokotlin2.argumentCaptor
+import com.nhaarman.mockitokotlin2.times
+import com.nhaarman.mockitokotlin2.verify
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.*
 import org.junit.Assert.*
@@ -96,6 +96,7 @@ class ColourGeneratorViewModelTest {
     @Test
     fun getRandomColour_success_updatesLoadingLiveData() = coroutineTestRule.testDispatcher.runBlockingTest {
         // Given
+        val ac = argumentCaptor<Boolean>()
         `when`(repositoryMock.getRandomWord()).thenReturn(COLOURNAMES)
         val mockLoadingObserver = mock(Observer::class.java) as Observer<Boolean>
         SUT.loadingLiveData.observeForever(mockLoadingObserver)
@@ -103,8 +104,10 @@ class ColourGeneratorViewModelTest {
         SUT.fetchNewColour(HEXCOLOUR)
         // Then
         val inOrder = inOrder(mockLoadingObserver)
-        inOrder.verify(mockLoadingObserver, times(1)).onChanged(false)
-        inOrder.verify(mockLoadingObserver, times(1)).onChanged(true)
+        inOrder.verify(mockLoadingObserver, times(2)).onChanged(ac.capture())
+        assertThat(ac.firstValue, `is`(false))
+        assertThat(ac.secondValue, `is`(true))
+
     }
 
     @Test // TODO to be investigated

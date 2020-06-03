@@ -107,7 +107,7 @@ class ColourGeneratorViewModelTest {
         inOrder.verify(mockLoadingObserver, times(1)).onChanged(true)
     }
 
-    @Test
+    @Test // TODO to be investigated
     fun getRandomColour_success_updatePlaySplatFxLiveData_when_getRandomWord() = coroutineTestRule.testDispatcher.runBlockingTest {
         // Given
         val ac = argumentCaptor<Command>()

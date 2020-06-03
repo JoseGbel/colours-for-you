@@ -14,6 +14,8 @@ import com.remcode.coloursforyou.data.repository.MainRepository
 import com.remcode.testUtils.CoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
+import org.hamcrest.CoreMatchers
+import org.hamcrest.CoreMatchers.*
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
@@ -22,6 +24,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import org.mockito.*
 import org.mockito.Mockito.*
+import org.mockito.internal.hamcrest.HamcrestArgumentMatcher
 
 
 @ExperimentalCoroutinesApi
@@ -44,9 +47,6 @@ class ColourGeneratorViewModelTest {
 
     @Mock
     lateinit var applicationMock: Application
-
-    @Mock
-    lateinit var observerMock: Observer<Command>
 
     @Mock
     lateinit var repositoryMock: MainRepository
@@ -84,13 +84,13 @@ class ColourGeneratorViewModelTest {
     fun getRandomWord_success_updatesLiveData() = coroutineTestRule.testDispatcher.runBlockingTest {
         // Given
         val mockWordListObserver = mock(Observer::class.java) as Observer<List<String>>
-        `when`(repositoryMock.getRandomWord()).thenReturn(listOf(COLOURNAME))
+        `when`(repositoryMock.getRandomWord()).thenReturn(COLOURNAMES)
         SUT.wordLiveData.observeForever(mockWordListObserver)
         // When
         SUT.fetchNewColour(HEXCOLOUR)
         // Then
         verify(mockWordListObserver, times(1)).onChanged(COLOURNAMES)
-        assertEquals(SUT.wordLiveData.value, listOf(COLOURNAME))
+        assertEquals(SUT.wordLiveData.value, COLOURNAMES)
     }
 
     @Test
@@ -110,10 +110,15 @@ class ColourGeneratorViewModelTest {
     @Test
     fun getRandomColour_success_updatePlaySplatFxLiveData_when_getRandomWord() = coroutineTestRule.testDispatcher.runBlockingTest {
         // Given
+        val ac = argumentCaptor<Command>()
         `when`(repositoryMock.getRandomWord()).thenReturn(COLOURNAMES)
+        val observerMock = mock(Observer::class.java) as Observer<Command>
         SUT.command.observeForever(observerMock)
         // When
         SUT.fetchNewColour(HEXCOLOUR)
+        // Then
+        verify(observerMock).onChanged(ac.capture())
+        assertThat(ac.allValues[0], instanceOf(Command.PlaySoundEffect::class.java))
     }
 
     @Test

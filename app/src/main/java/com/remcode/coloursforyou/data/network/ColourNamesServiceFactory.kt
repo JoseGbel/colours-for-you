@@ -1,4 +1,4 @@
-package com.remcode.coloursforyou.network
+package com.remcode.coloursforyou.data.network
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

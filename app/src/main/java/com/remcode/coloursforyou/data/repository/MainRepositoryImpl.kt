@@ -3,8 +3,8 @@ package com.remcode.coloursforyou.data.repository
 import androidx.lifecycle.LiveData
 import com.remcode.coloursforyou.data.local.ColourDao
 import com.remcode.coloursforyou.data.models.Colour
-import com.remcode.coloursforyou.network.ColourNamesService
-import com.remcode.coloursforyou.network.ColourNamesServiceFactory
+import com.remcode.coloursforyou.data.network.ColourNamesService
+import com.remcode.coloursforyou.data.network.ColourNamesServiceFactory
 
 class MainRepositoryImpl(private val colourNamesService : ColourNamesService = ColourNamesServiceFactory.createService(),
                          private val colourDao : ColourDao)

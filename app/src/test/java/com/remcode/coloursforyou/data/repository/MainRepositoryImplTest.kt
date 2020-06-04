@@ -6,7 +6,7 @@ import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
 import com.remcode.TestData
 import com.remcode.coloursforyou.data.local.ColourDao
 import com.remcode.coloursforyou.data.models.Colour
-import com.remcode.coloursforyou.network.ColourNamesService
+import com.remcode.coloursforyou.data.network.ColourNamesService
 import com.remcode.testUtils.CoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest

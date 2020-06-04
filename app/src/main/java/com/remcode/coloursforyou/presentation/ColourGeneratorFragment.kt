@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.remcode.coloursforyou.R
 import com.remcode.coloursforyou.business.ColourGeneratorViewModel
+import com.remcode.coloursforyou.business.ColourGeneratorViewModel.*
 import com.remcode.coloursforyou.business.ColourGeneratorViewModelFactory
 import com.remcode.coloursforyou.utils.NetworkStatus
 import com.remcode.coloursforyou.utils.NetworkStatusLiveData
@@ -49,8 +50,8 @@ class ColourGeneratorFragment : Fragment() {
 
         observeLoadingStatus()
         observeCommands(soundPool, splatSoundId)
-        observeNetworkConnectivity()
         observeColourLiveData()
+        observeNetworkConnectivity()
 
         fab.setOnClickListener {
             val randomColour = viewModel.generateRandomHexColour()
@@ -82,9 +83,9 @@ class ColourGeneratorFragment : Fragment() {
     }
 
     private fun observeCommands(soundPool: SoundPool, splatSoundId: Int) {
-        viewModel.command.observe(viewLifecycleOwner, Observer {
-            when (it) {
-                is ColourGeneratorViewModel.Command.PlaySoundEffect ->
+        viewModel.command.observe(viewLifecycleOwner, Observer { command ->
+            when (command) {
+                is Command.PlaySoundEffect ->
                     soundPool.play(splatSoundId, 1f, 1f, 1, 0, 1f)
             }
         })

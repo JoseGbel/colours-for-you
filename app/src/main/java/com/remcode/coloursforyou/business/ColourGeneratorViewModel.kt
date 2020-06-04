@@ -53,6 +53,7 @@ class ColourGeneratorViewModel(
                 val word = repository.getRandomWord()
                 _colourLiveData.postValue(Colour(colour, word[0]))
                 delay(2000)
+                command.postValue(Command.PlaySoundEffect())
             } catch (exception: Exception) {
                 // network call's unhappy path ... do something
                 if (exception.message != null)
@@ -62,7 +63,6 @@ class ColourGeneratorViewModel(
         job.invokeOnCompletion {
             EspressoIdlingResource.decrement()
             _loadingLiveData.postValue(false)
-            command.postValue(Command.PlaySoundEffect())
         }
     }
 

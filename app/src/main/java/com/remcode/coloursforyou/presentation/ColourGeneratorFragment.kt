@@ -48,11 +48,8 @@ class ColourGeneratorFragment : Fragment() {
         val (soundPool, splatSoundId) = buildSoundPool()
 
         observeLoadingStatus()
-
         observeCommands(soundPool, splatSoundId)
-
         observeNetworkConnectivity()
-
         observeColourLiveData()
 
         fab.setOnClickListener {

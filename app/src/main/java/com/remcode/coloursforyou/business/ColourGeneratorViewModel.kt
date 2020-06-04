@@ -22,10 +22,6 @@ class ColourGeneratorViewModel(application: Application,
 
     val command = SingleLiveEvent<Command>()
 
-    private val _wordLiveData = MutableLiveData<List<String>>()
-    val wordLiveData : LiveData<List<String>>
-        get() = _wordLiveData
-
     private val _colourLiveData = MutableLiveData<Colour>()
     val colourLiveData : LiveData<Colour>
         get() = _colourLiveData
@@ -48,7 +44,6 @@ class ColourGeneratorViewModel(application: Application,
             EspressoIdlingResource.increment()
             val job = viewModelScope.launch(dispatchers.io() + handler) {
                 val word = repository.getRandomWord()
-                _wordLiveData.postValue(word)
                 _colourLiveData.postValue(Colour(colour, word[0]))
                 delay(2000)
             }

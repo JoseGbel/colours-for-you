@@ -60,7 +60,7 @@ class ColourGeneratorViewModelTest {
     }
 
     @Test
-    fun getRandomWord_callsMethodInRepository() = coroutineTestRule.testDispatcher.runBlockingTest {
+    fun fetchNewColour_callsMethodInRepository() = coroutineTestRule.testDispatcher.runBlockingTest {
         // When
         SUT.fetchNewColour(HEXCOLOUR)
         // Then
@@ -68,9 +68,44 @@ class ColourGeneratorViewModelTest {
     }
 
     @Test
+    fun fetchNewColour_success_updatesLoadingLiveData() = coroutineTestRule.testDispatcher.runBlockingTest {
+        // Given
+        successApiRequest()
+        val ac = argumentCaptor<Boolean>()
+        val mockLoadingObserver = mock(Observer::class.java) as Observer<Boolean>
+        SUT.loadingLiveData.observeForever(mockLoadingObserver)
+        // When
+        SUT.fetchNewColour(HEXCOLOUR)
+        // Then
+        val inOrder = inOrder(mockLoadingObserver)
+        inOrder.verify(mockLoadingObserver, times(2)).onChanged(ac.capture())
+        assertThat(ac.firstValue, `is`(false))
+        assertThat(ac.secondValue, `is`(true))
+    }
+
+    @Test
+    fun fetchNewColour_success_updatePlaySplatFxLiveData_when_getRandomWord() = coroutineTestRule.testDispatcher.runBlockingTest {
+        // Given
+        val ac = argumentCaptor<Command>()
+        val observerMock = mock(Observer::class.java) as Observer<Command>
+        SUT.command.observeForever(observerMock)
+        // When
+        SUT.fetchNewColour(HEXCOLOUR)
+        // Then
+        verify(observerMock).onChanged(ac.capture())
+        assertThat(ac.allValues[0], instanceOf(Command.PlaySoundEffect::class.java))
+    }
+
+    @Test(expected = java.lang.Exception::class)
+    fun fetchNewColour_failure_throwException() = coroutineTestRule.testDispatcher.runBlockingTest  {
+        failureApiRequest()
+        SUT.fetchNewColour(COLOURNAME)
+    }
+
+    @Test
     fun insert_callsMethodInRepositoryWithRightParams() = coroutineTestRule.testDispatcher.runBlockingTest {
         // Given
-        `when`(repositoryMock.getRandomWord()).thenReturn(COLOURNAMES)
+        successApiRequest()
         val ac : KArgumentCaptor<Colour> = argumentCaptor()
         // When
         SUT.insert(COLOUR)
@@ -81,52 +116,16 @@ class ColourGeneratorViewModelTest {
     }
 
     @Test
-    fun getRandomWord_success_updatesLiveData() = coroutineTestRule.testDispatcher.runBlockingTest {
-        // Given
-        val mockWordListObserver = mock(Observer::class.java) as Observer<List<String>>
-        `when`(repositoryMock.getRandomWord()).thenReturn(COLOURNAMES)
-        SUT.wordLiveData.observeForever(mockWordListObserver)
-        // When
-        SUT.fetchNewColour(HEXCOLOUR)
-        // Then
-        verify(mockWordListObserver, times(1)).onChanged(COLOURNAMES)
-        assertEquals(SUT.wordLiveData.value, COLOURNAMES)
-    }
-
-    @Test
-    fun getRandomColour_success_updatesLoadingLiveData() = coroutineTestRule.testDispatcher.runBlockingTest {
-        // Given
-        val ac = argumentCaptor<Boolean>()
-        `when`(repositoryMock.getRandomWord()).thenReturn(COLOURNAMES)
-        val mockLoadingObserver = mock(Observer::class.java) as Observer<Boolean>
-        SUT.loadingLiveData.observeForever(mockLoadingObserver)
-        // When
-        SUT.fetchNewColour(HEXCOLOUR)
-        // Then
-        val inOrder = inOrder(mockLoadingObserver)
-        inOrder.verify(mockLoadingObserver, times(2)).onChanged(ac.capture())
-        assertThat(ac.firstValue, `is`(false))
-        assertThat(ac.secondValue, `is`(true))
-
-    }
-
-    @Test // TODO to be investigated
-    fun getRandomColour_success_updatePlaySplatFxLiveData_when_getRandomWord() = coroutineTestRule.testDispatcher.runBlockingTest {
-        // Given
-        val ac = argumentCaptor<Command>()
-        `when`(repositoryMock.getRandomWord()).thenReturn(COLOURNAMES)
-        val observerMock = mock(Observer::class.java) as Observer<Command>
-        SUT.command.observeForever(observerMock)
-        // When
-        SUT.fetchNewColour(HEXCOLOUR)
-        // Then
-        verify(observerMock).onChanged(ac.capture())
-        assertThat(ac.allValues[0], instanceOf(Command.PlaySoundEffect::class.java))
-    }
-
-    @Test
     fun getRandomHexColour_returnColourString() {
         val colour = SUT.generateRandomHexColour()
         assertEquals(colour.count(), 7)
+    }
+
+    private suspend fun successApiRequest() {
+        `when`(repositoryMock.getRandomWord()).thenReturn(COLOURNAMES)
+    }
+
+    private suspend fun failureApiRequest() {
+        doThrow(Exception()).`when`(repositoryMock.getRandomWord())
     }
 }
